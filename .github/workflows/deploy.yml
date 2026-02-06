@@ -1,0 +1,56 @@
+name: USER-BE CD (dev)
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build -x test
+
+      - name: Docker build & push
+        run: |
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login \
+            -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+          docker build -t hotspot/user-be:dev .
+          docker push hotspot/user-be:dev
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull hotspot/user-be:dev
+
+            docker stop user-be || true
+            docker rm user-be || true
+            docker image prune -f
+
+            docker run -d \
+              --name user-be \
+              -p 8080:8080 \
+              --env-file /srv/hotspot/.env \
+              --env-file /srv/hotspot/.env.user \
+              --restart always \
+              hotspot/user-be:dev
+            
+            docker image prune -f
