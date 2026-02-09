@@ -69,9 +69,23 @@ tasks.named('test') {
 spotless {
 	java {
 		target 'src/**/*.java'
-		googleJavaFormat()
+		// 4칸 들여쓰기 강제
+		indentWithSpaces(4)
+
+		// 개행 & 공백 정리
 		trimTrailingWhitespace()
 		endWithNewline()
+
+		// import 정렬
+		importOrder(
+				'java',
+				'javax',
+				'jakarta',
+				'org',
+				'com',
+				''
+		)
+		removeUnusedImports()
 	}
 }
 
