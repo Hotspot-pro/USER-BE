@@ -1,9 +1,11 @@
-package hotspot.user.member.infrastructure.entity;
-
 import hotspot.user.common.BaseEntity;
+import hotspot.user.member.domain.Member;
+import hotspot.user.member.domain.SocialAccount;
 import hotspot.user.member.domain.Status;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 /**
  * MemberEntity
@@ -33,4 +35,38 @@ public class MemberEntity extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
+
+
+    public static MemberEntity domainToEntity(Member member) {
+        return MemberEntity.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .birth(member.getBirth())
+                .status(member.getStatus())
+                .isDeleted(false)
+                .build();
+    }
+
+    public Member entityToDomain() {
+        return Member.builder()
+                .id(this.id)
+                .name(this.name)
+                .birth(this.birth)
+                .status(this.status)
+                .build();
+    }
+
+    /**
+     * SocialAccount 목록을 포함하여 Member 도메인 객체로 변환합니다.
+     * RepositoryImpl에서 각 테이블의 데이터를 조회한 후 조립할 때 사용합니다.
+     */
+    public Member entityToDomain(List<SocialAccount> socialAccountList) {
+        return Member.builder()
+                .id(this.id)
+                .name(this.name)
+                .birth(this.birth)
+                .status(this.status)
+                .socialAccountList(socialAccountList)
+                .build();
+    }
 }
