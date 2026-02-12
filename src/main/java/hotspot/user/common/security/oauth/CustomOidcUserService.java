@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hotspot.user.common.security.PrincipalDetails;
-import hotspot.user.member.controller.port.LoadSocialUserService;
+import hotspot.user.member.controller.port.SocialLoginService;
 import hotspot.user.member.controller.request.CreateSocialAccountRequest;
 import hotspot.user.member.domain.FamilyRole;
 import hotspot.user.member.domain.Member;
@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CustomOidcUserService extends OidcUserService {
 
-    private final LoadSocialUserService loadSocialUserService;
+    private final SocialLoginService socialLoginService;
 
     @Override
     @Transactional
@@ -70,13 +70,14 @@ public class CustomOidcUserService extends OidcUserService {
         Provider provider = Provider.valueOf(registrationId.toUpperCase());
 
         CreateSocialAccountRequest request = new CreateSocialAccountRequest(
+                name,
                 email,
                 socialId,
                 provider,
                 null // memberId는 서비스 내부에서 처리
         );
 
-        Member member = loadSocialUserService.loadOrCreateMember(name, request);
+        Member member = socialLoginService.login(request);
 
         log.info("[OIDC] 로그인 성공: provider={}, email={}, memberId={}", registrationId, email, member.getId());
 

@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import hotspot.user.member.controller.port.LoadSocialUserService;
+import hotspot.user.member.controller.port.RegisterSocialMemberService;
 import hotspot.user.member.controller.request.CreateSocialAccountRequest;
 import hotspot.user.member.domain.Member;
 import hotspot.user.member.domain.SocialAccount;
@@ -15,38 +15,30 @@ import hotspot.user.member.service.port.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * LoadSocialUserService 구현체
- * 소셜 로그인 성공 후 이메일을 기반으로 기존 회원을 조회하고,
- * 존재하지 않을 경우 PENDING 상태의 신규 회원 및 소셜 계정 정보를 생성합니다.
+ * RegisterSocialMemberService 구현체
  */
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class LoadSocialUserServiceImpl implements LoadSocialUserService {
+public class RegisterSocialMemberServiceImpl implements RegisterSocialMemberService {
 
     private final MemberRepository memberRepository;
 
     @Override
-    public Member loadOrCreateMember(String name, CreateSocialAccountRequest request) {
-        // 1. 이메일로 기존 회원 확인
-        return memberRepository.findByEmail(request.email())
-                .orElseGet(() -> createNewMember(name, request));
-    }
-
-    private Member createNewMember(String name, CreateSocialAccountRequest request) {
-        // 2. 신규 회원 생성 (상태는 PENDING)
+    public Member register(CreateSocialAccountRequest request) {
+        // 1. 신규 회원 생성 (상태는 PENDING)
         Member member = Member.builder()
-                .name(name)
+                .name(request.name())
                 .status(Status.PENDING)
                 .socialAccountList(new ArrayList<>())
                 .build();
 
-        // 3. Member 저장하여 ID 확보
+        // 2. Member 저장하여 ID 확보
         Member savedMember = memberRepository.save(member);
 
-        // 4. 소셜 계정 정보 생성 및 연결
-        // record의 값을 사용하되, 저장된 memberId를 주입하여 새로 요청 생성 (불변성 고려)
+        // 3. 소셜 계정 정보 생성 및 연결 (memberId 사용)
         CreateSocialAccountRequest accountRequest = new CreateSocialAccountRequest(
+                request.name(),
                 request.email(),
                 request.socialId(),
                 request.provider(),
@@ -55,7 +47,7 @@ public class LoadSocialUserServiceImpl implements LoadSocialUserService {
 
         SocialAccount socialAccount = SocialAccount.create(accountRequest);
 
-        // 5. Member에 소셜 계정 추가 후 최종 저장
+        // 4. Member에 소셜 계정 추가 후 최종 저장
         List<SocialAccount> socialAccounts = new ArrayList<>();
         socialAccounts.add(socialAccount);
 
