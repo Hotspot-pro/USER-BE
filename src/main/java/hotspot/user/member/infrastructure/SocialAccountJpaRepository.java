@@ -1,11 +1,12 @@
 package hotspot.user.member.infrastructure;
 
-import hotspot.user.member.infrastructure.entity.SocialAccountEntity;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import hotspot.user.member.infrastructure.entity.SocialAccountEntity;
 
 @Repository
 public interface SocialAccountJpaRepository extends JpaRepository<SocialAccountEntity, Long> {

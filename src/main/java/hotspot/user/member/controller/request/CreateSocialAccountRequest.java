@@ -1,8 +1,7 @@
 package hotspot.user.member.controller.request;
 
+
 import hotspot.user.member.domain.Provider;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * SocialAccount 요청 Dto
@@ -10,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 public record CreateSocialAccountRequest(
     String email,
     String socialId,
-    Provider provider
+    Provider provider,
+    Long memberId
 ) {
 }

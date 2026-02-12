@@ -1,17 +1,18 @@
 package hotspot.user.member.infrastructure;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import hotspot.user.member.domain.Member;
 import hotspot.user.member.domain.SocialAccount;
 import hotspot.user.member.infrastructure.entity.MemberEntity;
 import hotspot.user.member.infrastructure.entity.SocialAccountEntity;
 import hotspot.user.member.service.port.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class MemberRepositoryImpl implements MemberRepository {
             List<SocialAccountEntity> socialAccountEntities = member.getSocialAccountList().stream()
                     .map(socialAccount -> SocialAccountEntity.domainToEntity(socialAccount, savedMemberEntity))
                     .collect(Collectors.toList());
-            
+
             socialAccountJpaRepository.saveAll(socialAccountEntities);
         }
 
