@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import hotspot.user.common.BaseEntity;
 import hotspot.user.member.domain.Provider;
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "social_account")
 public class SocialAccountEntity extends BaseEntity {
 
     @Id
