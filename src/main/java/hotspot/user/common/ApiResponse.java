@@ -26,8 +26,8 @@ public class ApiResponse<T> {
         return new ApiResponse<>(HttpStatus.OK.value(), "200", "요청에 성공하였습니다.", data);
     }
 
-    public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>(HttpStatus.OK.value(), "200", message, data);
+    public static <T> ApiResponse<T> success(HttpStatus status, String code, String message, T data) {
+        return new ApiResponse<>(status.value(), code, message, data);
     }
 
     public static <T> ApiResponse<T> success() {
@@ -35,10 +35,9 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> fail(BaseErrorCode errorCode) {
-        return new ApiResponse<>(errorCode.getHttpStatus().value(), errorCode.getCustomCode(), errorCode.getMessage(), null);
-    }
-
-    public static <T> ApiResponse<T> fail(BaseErrorCode errorCode, String message) {
-        return new ApiResponse<>(errorCode.getHttpStatus().value(), errorCode.getCustomCode(), message, null);
+        return new ApiResponse<>(errorCode.getHttpStatus().value(),
+                errorCode.getCustomCode(),
+                errorCode.getMessage(),
+                null);
     }
 }

@@ -12,8 +12,9 @@ import hotspot.user.auth.controller.port.LogoutService;
 import hotspot.user.auth.controller.port.ReissueTokenService;
 import hotspot.user.auth.controller.request.TokenRequest;
 import hotspot.user.auth.controller.response.TokenResponse;
+import hotspot.user.common.ApiResponse;
 import hotspot.user.common.exception.ApplicationException;
-import hotspot.user.common.exception.code.GlobalErrorCode;
+import hotspot.user.common.exception.code.AuthErrorCode;
 import hotspot.user.common.security.jwt.JwtProperties;
 import hotspot.user.common.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +23,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-
     private final ReissueTokenService reissueTokenService;
     private final LogoutService logoutService;
     private final JwtProperties jwtProperties;
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenResponse> reissue(
+    public ResponseEntity<ApiResponse<TokenResponse>> reissue(
             @CookieValue(value = "refreshToken", required = false) String refreshToken) {
         if (refreshToken == null) {
-            throw new ApplicationException(GlobalErrorCode.BAD_REQUEST);
+            throw new ApplicationException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         TokenRequest request = new TokenRequest(refreshToken);
@@ -44,22 +44,23 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(response);
+                .body(ApiResponse.success(response));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @CookieValue(value = "refreshToken", required = false) String refreshToken) {
+
         if (refreshToken == null) {
-            throw new ApplicationException(GlobalErrorCode.BAD_REQUEST);
+            throw new ApplicationException(AuthErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         TokenRequest request = new TokenRequest(refreshToken);
         logoutService.logout(request);
-
         ResponseCookie cookie = CookieUtil.deleteCookie("refreshToken");
 
-        return ResponseEntity.noContent()
+        return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .build();
+                .body(ApiResponse.success());
     }
 }
