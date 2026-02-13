@@ -57,8 +57,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         saveTokenService.saveToken(principal.getId(), tokenRequest);
 
         // Refresh Token을 HttpOnly Cookie에 저장 (CookieUtil 사용)
-        // setMaxAge는 초 단위이므로 ms를 1000으로 나눔
-        ResponseCookie refreshCookie = CookieUtil.createCookie("refreshToken", refreshToken, refreshExpiration / 1000);
+        ResponseCookie refreshCookie = CookieUtil.createCookie("refreshToken", refreshToken, refreshExpiration);
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // Access Token만 Query Parameter로 전달하여 리다이렉트
