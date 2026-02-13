@@ -23,7 +23,9 @@ public class LogoutServiceImpl implements LogoutService {
         String refreshToken = request.refreshToken();
 
         if (jwtProvider.validateToken(refreshToken)) {
-            PrincipalDetails principal = (PrincipalDetails) jwtProvider.getAuthentication(refreshToken).getPrincipal();
+            // Refresh Token용 메서드를 사용하여 안전하게 사용자 정보 추출
+            PrincipalDetails principal = (PrincipalDetails) jwtProvider.getAuthenticationFromRefreshToken(refreshToken)
+                    .getPrincipal();
             tokenRepository.deleteByMemberId(principal.getId());
         }
     }

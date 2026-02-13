@@ -22,7 +22,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     @Override
     public void save(Token token) {
-        tokenCrudRepository.save(TokenEntity.domainToEntity(token, jwtProperties.getRefreshExpiration()));
+        // ms -> 초 변환
+        tokenCrudRepository.save(TokenEntity.domainToEntity(token, jwtProperties.getRefreshExpiration() / 1000));
     }
 
     @Override

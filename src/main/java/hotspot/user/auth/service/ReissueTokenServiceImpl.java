@@ -33,8 +33,8 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
             throw new ApplicationException(GlobalErrorCode.BAD_REQUEST);
         }
 
-        // 2. 인증 객체 추출
-        Authentication authentication = jwtProvider.getAuthentication(refreshToken);
+        // 2. 인증 객체 추출 (Refresh Token 전용 메서드 사용)
+        Authentication authentication = jwtProvider.getAuthenticationFromRefreshToken(refreshToken);
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
 
         // 3. Redis에 저장된 Refresh Token 확인
