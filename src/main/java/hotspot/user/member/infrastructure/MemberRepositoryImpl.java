@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import hotspot.user.member.domain.Member;
+import hotspot.user.member.domain.SocialAccount;
 import hotspot.user.member.infrastructure.entity.MemberEntity;
 import hotspot.user.member.infrastructure.entity.SocialAccountEntity;
 import hotspot.user.member.service.port.MemberRepository;
@@ -26,16 +27,18 @@ public class MemberRepositoryImpl implements MemberRepository {
         MemberEntity savedMemberEntity = memberJpaRepository.save(memberEntity);
 
         // 2. SocialAccount 저장 (Member ID 연결)
+        SocialAccount socialAccount = null;
         if (member.getSocialAccount() != null) {
             SocialAccountEntity socialAccountEntity = SocialAccountEntity.domainToEntity(
                     member.getSocialAccount(),
                     savedMemberEntity
             );
-            socialAccountJpaRepository.save(socialAccountEntity);
+            SocialAccountEntity savedSocialAccountEntity = socialAccountJpaRepository.save(socialAccountEntity);
+            socialAccount = savedSocialAccountEntity.entityToDomain();
         }
 
-        // 3. 다시 도메인으로 변환하여 반환
-        return findById(savedMemberEntity.getId()).orElseThrow();
+        // 3. 다시 조회하지 않고 저장된 엔티티들을 사용하여 직접 도메인 객체 조립 및 반환
+        return savedMemberEntity.entityToDomain(socialAccount);
     }
 
     @Override
