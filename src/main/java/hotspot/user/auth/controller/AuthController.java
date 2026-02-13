@@ -12,9 +12,9 @@ import hotspot.user.auth.controller.port.LogoutService;
 import hotspot.user.auth.controller.port.ReissueTokenService;
 import hotspot.user.auth.controller.request.TokenRequest;
 import hotspot.user.auth.controller.response.TokenResponse;
-import hotspot.user.common.security.jwt.JwtProperties;
 import hotspot.user.common.exception.ApplicationException;
 import hotspot.user.common.exception.code.GlobalErrorCode;
+import hotspot.user.common.security.jwt.JwtProperties;
 import hotspot.user.common.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 
